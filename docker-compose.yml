@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+ cobro:
+  build:
+    context: ./services/cobro
+    dockerfile: Dockerfile-dev
+#  volumes:
+#    - './services/cobro:/usr/src/app'
+  ports:
+    - 5001:5000  
+  environment:
+    - FLASK_APP=project/__init__.py
+    - FLASK_ENV=development
+    - APP_SETTINGS=project.config.DevelopmentConfig  # nuevo
+    - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev  # nuevo
+    - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test  # nuevo
+  
+  depends_on:  # nuevo
+    - users-db
+
+ users-db:  # nuevo
+   build:
+     context: ./services/cobro/project/db
+     dockerfile: Dockerfile
+   ports:
+     - 5435:5432
+   environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres

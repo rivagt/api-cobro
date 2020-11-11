@@ -1,0 +1,23 @@
+# se basa en una imagen
+FROM python:3.7.3-alpine
+# install sqlite 
+RUN apk update && \
+    apk add --virtual build-deps gcc python-dev musl-dev && \
+    apk add postgresql-dev && \
+    apk add netcat-openbsd
+
+# set workdirk
+WORKDIR /usr/src/app
+# copiamos e instalamos las dependencias
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
+
+# nuevo
+# copiando entrypoint.sh
+COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# copiamos app
+COPY . /usr/src/app
+# run server
+CMD python manage.py run -h 0.0.0.0
